@@ -16,10 +16,6 @@ class Person(object):
     def did_survive_infection(self):
 
         if self.infection:
-
-            # if there is no infection, don't need to check survival
-            if self.infection is None:
-                return False
             
             # random generator for survival rate
             survival_rate = random.random()
@@ -35,7 +31,7 @@ class Person(object):
 
                 # if person is vaccinated, the person survived
                 self.is_alive = True
-                self.vaccinated = True
+                self.is_vaccinated = True
                 self.infection = None
                 return True
             
@@ -44,8 +40,6 @@ class Person(object):
 
 if __name__ == "__main__":
     # This section is incomplete finish it and use it to test your Person class
-    # TODO Define a vaccinated person and check their attributes
-
 
     vaccinated_person = Person(1, True)
     assert vaccinated_person._id == 1
@@ -60,8 +54,8 @@ if __name__ == "__main__":
     assert unvaccinated_person.is_vaccinated is False
     assert unvaccinated_person.infection is None
 
-    # Test an infected person. An infected person has an infection/virus
-    # Create a Virus object to give a Person object an infection
+# Test an infected person. An infected person has an infection/virus
+# Create a Virus object to give a Person object an infection
     virus = Virus("Dysentery", 0.7, 0.2)
 
     infected_person = Person(3, False, virus)
@@ -75,7 +69,7 @@ if __name__ == "__main__":
     # Create a list to hold 100 people. Use the loop below to make 100 people
 
     people = []
-    for i in range(1, 100):
+    for i in range(1, 100): #ask if code should be changed to 101 for the range.
         person = Person(i, False, virus)
         people.append(person)
 

@@ -29,7 +29,7 @@ if __name__ == "__main__":
     print(f'Virus name: {virus.name}\n Reproduction Rate: {virus.repro_rate * 100}% \n Mortality Rate: {virus.mortality_rate * 100}\n ')
 
     virus = Virus("Sars", 0.2, 0.1)
-    assert virus.name == "Polio"
+    assert virus.name == "Sars"
     assert virus.repro_rate == 0.2
     assert virus.mortality_rate == 0.1
 
