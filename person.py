@@ -10,6 +10,7 @@ class Person(object):
         self._id = _id  # int
         self.is_vaccinated = is_vaccinated
         self.infection = infection
+        self.infected = infection is not None
         self.is_alive = True
         
 
