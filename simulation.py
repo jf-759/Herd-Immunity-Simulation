@@ -48,6 +48,11 @@ class Simulation(object):
         return False
 
     def run(self):
+        """
+        Run the simulation. 
+        The `virus` parameter is accepted for compatibility but not 
+        used because the virus is already stored in the `Simulation` object.
+        """
 
         time_step_counter = 0
         should_continue = True
@@ -60,8 +65,10 @@ class Simulation(object):
             should_continue = self._simulation_should_continue()
             self.logger.log_time_step(time_step_counter)
             self._infect_newly_infected()
+        
+        self.logger.write_metadata(self.pop_size, self.vacc_percentage, self.virus.name, self.virus.mortality_rate, self.virus.repro_rate)
 
-        if time_step_counter>= max_time_steps:
+        if time_step_counter >= max_time_steps:
             print("Reached maximum time steps, stop simulation.")
         else:
             print("Simulation finished.")
@@ -75,7 +82,7 @@ class Simulation(object):
         if random_person.is_vaccinated:
             self.logger.log_interactions
         elif random_person.infection is not None:
-            self.logger.log_interactions(infected_person._id, random_person._id, Flase, False, True)
+            self.logger.log_interactions(infected_person._id, random_person._id, False, False, True)
 
         elif not random_person.is_vaccinated:
             if random.random() < self.virus.repro_rate:
@@ -97,7 +104,7 @@ if __name__ == "__main__":
     virus_name = "Sniffles"
     repro_num = 0.5
     mortality_rate = 0.12
-    virus = Virus(virus_name, repro_num, mortality_rate)
+
 
     # Set some values used by the simulation
     pop_size = 1000
@@ -105,6 +112,7 @@ if __name__ == "__main__":
     initial_infected = 10
 
     # Make a new instance of the imulation
+    virus = Virus(virus_name, repro_num, mortality_rate)
     sim = Simulation(virus, pop_size, vacc_percentage, initial_infected)
 
     sim.run()
