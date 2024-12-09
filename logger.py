@@ -2,7 +2,7 @@ class Logger(object):
     def __init__(self, file_name):
         self.file_name = file_name
 
-    def write_metadata(self, pop_size, vacc_percentage, virus_name, mortality_rate, basic_repro_num):
+    def write_metadata(self, pop_size, vacc_percentage, virus_name, mortality_rate, repro_rate):
 
         with open(self.file_name, 'w') as f:
             f.write(f'''
@@ -11,7 +11,7 @@ class Logger(object):
 |           Vaccination Percentage: {vacc_percentage}\n
 |           Virus Name: {virus_name}\n
 |           Mortality Rate: {mortality_rate}\n
-|           Basic Reproduction Number: {basic_repro_num}\n
+|           Basic Reproduction Number: {repro_rate}\n
 ----------------------------------------------------------------------------------
 
                     

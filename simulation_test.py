@@ -14,7 +14,7 @@ def simulation_test():
     initial_infected_count = sum(1 for person in sim.population if person.infection is not None)
     assert initial_infected_count == 5, f"Initial infected count should be 5 but got {initial_infected_count}"
 
-    vaccinated_count = sum(1 for person in sim.population if person.is_vacinated)
+    vaccinated_count = sum(1 for person in sim.population if person.is_vaccinated)
     assert vaccinated_count >= 85, f"Vaccinated count should be at least 85 but got {vaccinated_count}"
 
     sim.run()
