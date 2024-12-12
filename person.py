@@ -102,5 +102,5 @@ if __name__ == "__main__":
     # Assign the virus to that person's infection attribute. 
 
     # Now count the infected and uninfect people from this group of people. 
-    # The number of infectedf people should be roughly the same as the 
+    # The number of infected people should be roughly the same as the 
     # infection rate of the virus.

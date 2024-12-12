@@ -7,7 +7,7 @@ from virus import Virus
 
 class Simulation(object):
     def __init__(self, virus, pop_size, vacc_percentage, initial_infected=1):
-        
+
         self.virus = virus
         self.pop_size = pop_size
         self.vacc_percentage = vacc_percentage
@@ -28,17 +28,23 @@ class Simulation(object):
 
         # the initial infected individuals
         for i in range(initial_infected):
-            person = Person(i, False, self.virus)
+            person = Person(i, is_vaccinated=False, infection=self.virus)
             population.append(person)
 
-        # the rest of the population
-        for i in range(initial_infected, self.pop_size):
-            is_vaccinated = (random.random() < self.vacc_percentage)
-            person = Person(i, is_vaccinated)
+        num_vaccinated = int(self.vacc_percentage * (self.pop_size - initial_infected))
+
+        # for those that are vaccinated
+        for i in range(initial_infected, initial_infected + num_vaccinated):
+            person = Person(i, is_vaccinated=True, infection=None)
             population.append(person)
 
+        # for the rest of the population
+        for i in range(initial_infected + num_vaccinated, self.pop_size):
+            person = Person(i, is_vaccinated=False, infection=None)
+            population.append(person)
+
+        random.shuffle(population)
         return population
-        
 
     def _simulation_should_continue(self):
         
@@ -99,20 +105,69 @@ class Simulation(object):
         self.newly_infected = []
 
 
-if __name__ == "__main__":
-    # Test your simulation here
+# function to help with command-line arguements.
+def load_config():
+    # default values
+    config = {
+        'pop_size': 1000,
+        'vacc_percentage': 0.1,
+        'virus_name': 'Sniffles',
+        'repro_rate': 0.5, 
+        'mortality_rate': 0.12,
+        'initial_infected': 10
+    }
+
+    if len(sys.argv) == 7:
+        config['pop_size'] = int(sys.argv[1])
+        config['vacc_percentage'] = float(sys.argv[2])
+        config['virus_name'] = sys.argv[3]
+        config['repro_rate'] = float(sys.argv[4])
+        config['mortality_rate'] = float(sys.argv[5])
+        config['initial_infected'] = int(sys.argv[6])
+
+    return config
+
+def run_simulation():
+    config = load_config()
+    virus = Virus(config['virus_name'], config['repro_rate'], config['mortality_rate'])
+    sim = Simulation(config)
+    sim.run()
+
+def test_simulation():
+        # Test your simulation here
     virus_name = "Sniffles"
     repro_num = 0.5
     mortality_rate = 0.12
-
 
     # Set some values used by the simulation
     pop_size = 1000
     vacc_percentage = 0.1
     initial_infected = 10
 
+
     # Make a new instance of the imulation
     virus = Virus(virus_name, repro_num, mortality_rate)
     sim = Simulation(virus, pop_size, vacc_percentage, initial_infected)
+
+
+    sim.run()
+
+
+if __name__ == "__main__":
+    # Test your simulation here
+    virus_name = "Sniffles"
+    repro_num = 0.5
+    mortality_rate = 0.12
+
+    # Set some values used by the simulation
+    pop_size = 1000
+    vacc_percentage = 0.1
+    initial_infected = 10
+
+
+    # Make a new instance of the imulation
+    virus = Virus(virus_name, repro_num, mortality_rate)
+    sim = Simulation(virus, pop_size, vacc_percentage, initial_infected)
+
 
     sim.run()
