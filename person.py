@@ -1,6 +1,7 @@
 import random
 # random.seed(42)
 from virus import Virus
+from logger import Logger
 
 
 class Person(object):

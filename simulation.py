@@ -13,10 +13,11 @@ class Simulation(object):
         self.vacc_percentage = vacc_percentage
         self.initial_infected = initial_infected
 
-        # create a Logger object and bind it to self.logger
-        self.logger = Logger('simulation_log.txt')
+        self.total_interactions = 0
+        self.total_infected = 0
+        self.total_deaths = 0
+        self.total_lives_saved_with_vaccine = 0
 
-        self.logger.write_metadata(self.pop_size, self.vacc_percentage, self.virus.name, self.virus.mortality_rate, self.virus.repro_rate)
 
         # initializing other attributes needed
         self.population = self._create_population(initial_infected)
@@ -47,13 +48,18 @@ class Simulation(object):
         return population
 
     def _simulation_should_continue(self):
+
+        """ 
+        Checks if the simulation should continue or not. 
+        We check for any alive person (vaccinated or not).
+        """
         
         for person in self.population:
-            if person.is_alive and not person.is_vaccinated:
+            if person.is_alive:
                 return True
         return False
 
-    def run(self):
+    def run(self, time_steps):
         """
         Run the simulation. 
         The `virus` parameter is accepted for compatibility but not 
@@ -62,45 +68,70 @@ class Simulation(object):
 
         time_step_counter = 0
         should_continue = True
-        max_time_steps = 1000
+    
 
-        while should_continue and time_step_counter < max_time_steps:
+        while should_continue and time_step_counter < time_steps:
             print(f'Starting time step {time_step_counter}')
             time_step_counter += 1
+
             self.time_step()
+
             should_continue = self._simulation_should_continue()
-            self.logger.log_time_step(time_step_counter)
+
             self._infect_newly_infected()
         
-        self.logger.write_metadata(self.pop_size, self.vacc_percentage, self.virus.name, self.virus.mortality_rate, self.virus.repro_rate)
+        # Printing so I can see everything when running simulation.py
+        infected_percentage = (self.total_infected / self.pop_size) * 100
+        print(f"Percentage of the population that became infected: {infected_percentage}%")
 
-        if time_step_counter >= max_time_steps:
-            print("Reached maximum time steps, stop simulation.")
+        death_percentage = (self.total_deaths / self.pop_size) * 100
+        print(f"Percentage of the population that died from the virus: {death_percentage}%")
+
+        print(f"Total number of vaccinations that saved someone: {self.total_lives_saved_with_vaccine}")
+
+        # Print output after simulation ends.
+        print(f'{time_step_counter} {self.total_interactions} {self.total_infected} {self.total_deaths} {self.total_lives_saved_with_vaccine}')
+
+        if time_step_counter >= time_steps:
+            print(f"Simulation finished after {time_step_counter} time steps.")
         else:
-            print("Simulation finished.")
+            print("Simulation stopped early.")
 
     def time_step(self):
-        for person in self.population:
-            if person.infection is not None and random.random() < self.virus.mortality_rate:
-                person.is_alive = False
+        
+        # Simulate interactions between infected and healthy individuals
+        for infected_person in [person for person in self.population if person.infection is not None and person.is_alive]:
+            for random_person in [person for person in self.population if person.is_alive and person != infected_person]:
+                self.interaction(infected_person, random_person)
+
+            # Mortality rate
+            if random.random() < self.virus.mortality_rate:
+                infected_person.is_alive = False
+                self.total_deaths += 1
+
 
     def interaction(self, infected_person, random_person):
-        if random_person.is_vaccinated:
-            self.logger.log_interactions
-        elif random_person.infection is not None:
-            self.logger.log_interactions(infected_person._id, random_person._id, False, False, True)
+        self.total_interactions += 1
 
-        elif not random_person.is_vaccinated:
+        if random_person.is_vaccinated:
+            self.total_lives_saved_with_vaccine += 1
+
+        elif random_person.is_vaccinated == False and random_person.infection is None and random_person.is_alive:
+            
+            # if the person is unvaccinated and healthy, they may get infected
             if random.random() < self.virus.repro_rate:
                 self.newly_infected.append(random_person)
-                self.logger.log_interactions(infected_person._id, random_person._id, True, False, False)
-                
-            else:
-                self.logger.log_interactions(infected_person._id, random_person._id, False, False, False)
+                self.population.remove(random_person)
+                self.total_infected += 1
 
     def _infect_newly_infected(self):
+        """
+        Infects everyone in the list then clears the list.
+        """
         for person in self.newly_infected:
             person.infection = self.virus
+            self.total_infected += 1
+            self.population.append(person)
 
         self.newly_infected = []
 
@@ -114,44 +145,20 @@ def load_config():
         'virus_name': 'Sniffles',
         'repro_rate': 0.5, 
         'mortality_rate': 0.12,
-        'initial_infected': 10
+        'initial_infected': 10,
+        'time_steps': 1000
     }
 
-    if len(sys.argv) == 7:
+    if len(sys.argv) == 8:
         config['pop_size'] = int(sys.argv[1])
         config['vacc_percentage'] = float(sys.argv[2])
         config['virus_name'] = sys.argv[3]
         config['repro_rate'] = float(sys.argv[4])
         config['mortality_rate'] = float(sys.argv[5])
         config['initial_infected'] = int(sys.argv[6])
+        config['time_steps'] = int(sys.argv[7])
 
     return config
-
-def run_simulation():
-    config = load_config()
-    virus = Virus(config['virus_name'], config['repro_rate'], config['mortality_rate'])
-    sim = Simulation(config)
-    sim.run()
-
-def test_simulation():
-        # Test your simulation here
-    virus_name = "Sniffles"
-    repro_num = 0.5
-    mortality_rate = 0.12
-
-    # Set some values used by the simulation
-    pop_size = 1000
-    vacc_percentage = 0.1
-    initial_infected = 10
-
-
-    # Make a new instance of the imulation
-    virus = Virus(virus_name, repro_num, mortality_rate)
-    sim = Simulation(virus, pop_size, vacc_percentage, initial_infected)
-
-
-    sim.run()
-
 
 if __name__ == "__main__":
     # Test your simulation here
@@ -168,6 +175,6 @@ if __name__ == "__main__":
     # Make a new instance of the imulation
     virus = Virus(virus_name, repro_num, mortality_rate)
     sim = Simulation(virus, pop_size, vacc_percentage, initial_infected)
+    config = load_config()
 
-
-    sim.run()
+    sim.run(config['time_steps'])

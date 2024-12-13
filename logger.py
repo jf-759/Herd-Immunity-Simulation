@@ -65,3 +65,14 @@ class Logger(object):
 |           Time Step Number: {time_step_number}\n
 ----------------------------------------------------------------------------------
                     ''')
+            
+    def log_interaction(self, infected_id, random_id, did_infect, is_vaccinated, was_alread_infected):
+        with open(self.file_name, 'a') as f:
+            f.write(f'''
+----------------------------------------------------------------------------------
+|           Infected Person {infected_id} interacts with Person {random_id}\n
+|           Did infect: {did_infect}\n
+|           Is vaccinated: {is_vaccinated}\n
+|           Was already infected: {was_alread_infected}\n
+----------------------------------------------------------------------------------
+                    ''')

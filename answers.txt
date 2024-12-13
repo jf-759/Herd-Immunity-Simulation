@@ -1,7 +1,28 @@
 1. What were the inputs you gave the simulation? (Population size, percent vaccinated, virus name, mortality rate, reproductive rate)
 
+    - Population Size: 1000
+    - Percent Vaccinated: 10%
+    - Virus Name: "Sniffles"
+    - Mortality Rate: 12%
+    - Reproductive Rate: 5%
+    - People Initially Infected: 10%
+
+    `python3 simulation.py 1000 0.1 Sniffles 0.12 0.5 10`
+
 2. What percentage of the population became infected at some point before the virus burned out?
+
+- 178.2%
 
 3. What percentage of the population died from the virus?
 
+- 90.1%
+
 4. Out of all interactions sick individuals had during the entire simulation, how many times in total, did a vaccination save someone from potentially becoming infected?
+
+- 746,361
+
+
+Notes for myself: 
+I know some of the code on here doesn't add up mathematically. 
+Hopefully I can figure that out one day, when I get better at coding. 
+As for right now, I think this is the best that I can do.
